@@ -53,7 +53,10 @@ def fun_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, neg
     
     out = latent.copy()
     out["samples"] = samples
-    return (out, callback.get_results())  # Return the results from the callback
+    return {
+        "latent": out,
+        "images": callback.get_results()
+    }  # Return the results from the callback
 
 class PreviewCallback:
     def __init__(self, latent, preview_steps_list, vae, model):
@@ -72,7 +75,7 @@ class PreviewCallback:
             print("Warning: No preview method available, falling back to full VAE for previews")
 
     def get_results(self):
-        return {"ui": {"images": self.results}}
+        return self.results
 
     def __call__(self, step, denoised, x, total_steps):
         if step in self.preview_steps_list:
@@ -116,7 +119,6 @@ class PreviewCallback:
                     "filename": file,
                     "subfolder": subfolder,
                     "type": self.type,
-                    "output_id": "preview_images"
                 }
                 
                 # Add to results list
@@ -145,8 +147,8 @@ class KSampler:
             }
         }
 
-    RETURN_TYPES = ("LATENT", "LATENT")
-    RETURN_NAMES = ("latent", "preview_latents")
+    RETURN_TYPES = ("LATENT",)
+    RETURN_NAMES = ("latent",)
     OUTPUT_TOOLTIPS = ("The final denoised latent.", "Preview images are saved directly to the outputs folder using TAESD for better quality.")
     FUNCTION = "sample"
 
@@ -154,7 +156,8 @@ class KSampler:
     DESCRIPTION = "Uses the provided model, positive and negative conditioning to denoise the latent image. Saves intermediate previews to the outputs folder using TAESD for better quality."
 
     def sample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, vae, denoise=1.0, preview_steps=5, skip_steps=0):
-        return fun_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, vae, denoise=denoise, preview_steps=preview_steps, skip_steps=skip_steps)
+        result_dict = fun_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, vae, denoise=denoise, preview_steps=preview_steps, skip_steps=skip_steps)
+        return (result_dict["latent"],)
 
 NODE_CLASS_MAPPINGS = {
     "Fun KSampler": KSampler
