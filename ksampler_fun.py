@@ -156,7 +156,9 @@ class KSampler:
     DESCRIPTION = "Uses the provided model, positive and negative conditioning to denoise the latent image. Saves intermediate previews to the outputs folder using TAESD for better quality."
 
     def sample(self, model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, vae, denoise=1.0, preview_steps=5, skip_steps=0):
-        return fun_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, vae, denoise=denoise, preview_steps=preview_steps, skip_steps=skip_steps)
+        output =  fun_ksampler(model, seed, steps, cfg, sampler_name, scheduler, positive, negative, latent_image, vae, denoise=denoise, preview_steps=preview_steps, skip_steps=skip_steps)
+        print('output: ', output)
+        return (output["latent"], )
 
 NODE_CLASS_MAPPINGS = {
     "Fun KSampler": KSampler
