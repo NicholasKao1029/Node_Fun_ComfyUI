@@ -152,6 +152,8 @@ class KSampler:
     OUTPUT_TOOLTIPS = ("The final denoised latent.", "Preview images are saved directly to the outputs folder using TAESD for better quality.")
     FUNCTION = "sample"
 
+    OUTPUT_NODE = True
+
     CATEGORY = "sampling"
     DESCRIPTION = "Uses the provided model, positive and negative conditioning to denoise the latent image. Saves intermediate previews to the outputs folder using TAESD for better quality."
 
